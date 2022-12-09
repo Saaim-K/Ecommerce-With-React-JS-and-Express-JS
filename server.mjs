@@ -1,29 +1,43 @@
 import express from 'express'
+import cors from 'cors'
 const app = express();
-const port = process.env.PORT || 5555;
+const port = process.env.PORT || 4444;
 
-//   .post is used to create something
-//   .get is used to get something
+//  (Request) req method comes from the client side
+//  (Response) res method is send from server side to client side as a result of response
+//  .post is used to create something from client side and then send to server
+//  .get is used to get something from the server
+//  
+
+let todos = []
+
+app.use(express.json());
+app.use(cors())
+
 app.get('/', (req, res) => {
     // console.log('Request IP :', req.ip)
     console.log('Hello World From Server')
     res.send(`Hello World From Server`)
 })
 
-app.post('/water', (req, res) => {
-    console.log('Someone is sending Water')//server side displayed message
-    res.send(`<h1>Water Recieved</h1>`)//message shown to user
+app.post('/todo', (req, res) => {
+    console.log('Request send from client side')
+    todos.push(req.body.text)
+    res.send({
+        messsage: "your task has been saved",
+        data: todos
+    })
 })
 
-app.get('/pizza', (req, res) => {
-    console.log('Someone is requesting for Pizza')
-    res.send(`<h1>Hey Bro! Here's your pizza</h1>`)
+app.get('/todos', (req, res) => {
+    console.log('Request send from client side')
+    res.send({
+        messaage: "Here is ur task",
+        data: todos
+    })
 })
 
-app.get('*', (req, res) => {
-    console.log('404')
-    res.send()
-})
+//
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
