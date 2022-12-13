@@ -172,6 +172,7 @@ app.use('/', express.static(path.join(__dirname, './app/build')))
 app.use('*', express.static(path.join(__dirname, './app/build')))
 
 
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
 })
