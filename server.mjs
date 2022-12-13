@@ -12,6 +12,13 @@ const port = process.env.PORT || 4444;
 //   PUT   : .put request creates a resource or updates an existing resource.
 //   DELETE: .delete request deletes a resource.
 
+// -------------------------- Rest API Principles --------------------------
+//      1) Uniform Interface
+//      2) Sepration of concern of client and server. req and res will be in json
+//      3) Stateless means data should be stored in database
+//      4) Uniform Interface
+//      5) Uniform Interface
+
 app.use(cors())
 app.use(express.json()); // Parsing body at server
 
@@ -20,16 +27,18 @@ let products = [];// Connect with Mongo DB
 
 
 // ----------------------------------- Create/Add Product -----------------------------------
-app.post('/addProduct', (req, res) => {
+app.post('/product', (req, res) => {
     const body = req.body
 
     // ------------- 1st Method -------------
-    if (!body.name && !body.price && !body.description) {
-        res.status(400).send("Required Paramters Missing")
+    if (!body.name || !body.price || !body.description) {
+        res.status(400).send({
+            message: 'Required Paramters Missing'
+        })
         return;
     }
     products.push({
-        id: new Date().getTime(),
+        id: `${new Date().getTime()}`,
         name: body.name,
         price: body.price,
         description: body.description
@@ -37,7 +46,9 @@ app.post('/addProduct', (req, res) => {
     console.log(body.name)
     console.log(body.price)
     console.log(body.description)
-    res.send('Product added succesfullly')
+    res.send({
+        message: 'Product added succesfullly'
+    })
     // ------------- 1st Method -------------
 
     // ------------- 2nd Method -------------
@@ -62,46 +73,59 @@ app.post('/addProduct', (req, res) => {
 
 
 // ----------------------------------- Get Product -----------------------------------
-// ------------------------ Get All Product ------------------------
-app.get('/getProducts', (req, res) => {
-    res.send(products)
-})
-// ------------------------ Get All Product ------------------------
-
 // ------------------------ Get Single Product ------------------------
-app.get('/getProduct/:id', (req, res) => {
+app.get('/product/:id', (req, res) => {
     const id = req.params.id
     let isFound = false
     for (i = 0; i < products.length; i++) {
         if (products[i].id === id) {
-            res.send(products[i])
+            res.send({
+                message: `Got the product of the specified id ${products[i].id}`,
+                data: products[i]
+            })
             isFound = true
             break
         }
-    } if (!isFound) {
+    }
+    if (!isFound) {
         res.status(400)
-        res.send('Product Not Fund')
+        res.send({
+            message: 'Product Not Fund'
+        })
     }
 })
 // ------------------------ Get Single Product ------------------------
+
+// ------------------------ Get All Product ------------------------
+app.get('/products', (req, res) => {
+    res.send({
+        message: "All products",
+        data: products
+    })
+})
+// ------------------------ Get All Product ------------------------
 // ----------------------------------- Get Product -----------------------------------
 
 
 
 // ----------------------------------- Delete Product -----------------------------------
-app.delete('/deleteProduct/:id', (req, res) => {
+app.delete('/product/:id', (req, res) => {
     const id = req.params.id
     let isFound = false
     for (i = 0; i < products.length; i++) {
         if (products[i].id === id) {
             products.splice(i, 1)
-            res.send(`</h1> Product deleted Succesfully </h1> ${products[i]}`)
+            res.send({
+                message: `</h1> Product of id ${products[i]} deleted Succesfully </h1>`
+            })
             isFound = true
             break
         }
     } if (!isFound) {
         res.status(404)
-        res.send('Delete Fail : Product Not Fund')
+        res.send({
+            message: 'Delete Fail : Product Not Fund'
+        })
     }
 })
 // ----------------------------------- Delete Product -----------------------------------
@@ -109,12 +133,14 @@ app.delete('/deleteProduct/:id', (req, res) => {
 
 
 // ----------------------------------- Update Product -----------------------------------
-app.put('/updateProduct/:id', (req, res) => {
+app.put('/product/:id', (req, res) => {
     const body = req.body
     const id = req.params.id
 
-    if (!body.name && !body.price && !body.description) {
-        res.status(400).send("Required Paramters Missing")
+    if (!body.name || !body.price || !body.description) {
+        res.status(400).send({
+            message: "Required Paramters Missing"
+        })
         return;
     }
 
@@ -124,21 +150,18 @@ app.put('/updateProduct/:id', (req, res) => {
             products[i].name = body.name
             products[i].price = body.price
             products[i].description = body.description
-            res.send(`</h1> Product Modified Succesfully </h1>}`)
+            res.send({
+                message: `</h1> Product Modified Succesfully </h1>}`
+            })
             isFound = true
             break
         }
     } if (!isFound) {
         res.status(404)
-        res.send('Update Fail : Product Not Fund')
+        res.send({
+            message: 'Update Fail : Product Not Fund'
+        })
     }
-
-
-
-
-
-
-
 })
 // ----------------------------------- Update Product -----------------------------------
 
@@ -147,6 +170,7 @@ app.put('/updateProduct/:id', (req, res) => {
 const __dirname = path.resolve();
 app.use('/', express.static(path.join(__dirname, './app/build')))
 app.use('*', express.static(path.join(__dirname, './app/build')))
+
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
