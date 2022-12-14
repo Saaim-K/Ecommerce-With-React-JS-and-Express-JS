@@ -1,7 +1,6 @@
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
-
 const app = express();
 const port = process.env.PORT || 4444;
 
@@ -15,9 +14,10 @@ const port = process.env.PORT || 4444;
 // -------------------------- Rest API Principles --------------------------
 //      1) Uniform Interface
 //      2) Sepration of concern of client and server. req and res will be in json
-//      3) Stateless means data should be stored in database
-//      4) Uniform Interface
-//      5) Uniform Interface
+//      3) Stateless means data should be stored in database not in a variable
+//      4) Cacheable
+//      5) 
+// -------------------------- Rest API Principles --------------------------
 
 app.use(cors())
 app.use(express.json()); // Parsing body at server
@@ -43,11 +43,9 @@ app.post('/product', (req, res) => {
         price: body.price,
         description: body.description
     })
-    console.log(body.name)
-    console.log(body.price)
-    console.log(body.description)
     res.send({
-        message: 'Product added succesfullly'
+        message: 'Product Added Succesfully 👍',
+        data: products
     })
     // ------------- 1st Method -------------
 
@@ -77,7 +75,7 @@ app.post('/product', (req, res) => {
 app.get('/product/:id', (req, res) => {
     const id = req.params.id
     let isFound = false
-    for (i = 0; i < products.length; i++) {
+    for (let i = 0; i < products.length; i++) {
         if (products[i].id === id) {
             res.send({
                 message: `Got the product of the specified id ${products[i].id}`,
@@ -112,11 +110,11 @@ app.get('/products', (req, res) => {
 app.delete('/product/:id', (req, res) => {
     const id = req.params.id
     let isFound = false
-    for (i = 0; i < products.length; i++) {
+    for (let i = 0; i < products.length; i++) {
         if (products[i].id === id) {
             products.splice(i, 1)
             res.send({
-                message: `</h1> Product of id ${products[i]} deleted Succesfully </h1>`
+                message: `</h1> Product deleted Succesfully </h1>`
             })
             isFound = true
             break
@@ -129,8 +127,6 @@ app.delete('/product/:id', (req, res) => {
     }
 })
 // ----------------------------------- Delete Product -----------------------------------
-
-
 
 // ----------------------------------- Update Product -----------------------------------
 app.put('/product/:id', (req, res) => {
@@ -145,7 +141,7 @@ app.put('/product/:id', (req, res) => {
     }
 
     let isFound = false
-    for (i = 0; i < products.length; i++) {
+    for (let i = 0; i < products.length; i++) {
         if (products[i].id === id) {
             products[i].name = body.name
             products[i].price = body.price
@@ -167,9 +163,9 @@ app.put('/product/:id', (req, res) => {
 
 
 
-const __dirname = path.resolve();
-app.use('/', express.static(path.join(__dirname, './app/build')))
-app.use('*', express.static(path.join(__dirname, './app/build')))
+// const __dirname = path.resolve();
+// app.use('/', express.static(path.join(__dirname, './app/build')))
+// app.use('*', express.static(path.join(__dirname, './app/build')))
 
 
 
