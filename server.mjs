@@ -1,5 +1,5 @@
 import express from 'express'
-import path from 'path'
+// import path from 'path'
 import cors from 'cors'
 const app = express();
 const port = process.env.PORT || 4444;
@@ -31,7 +31,7 @@ app.post('/product', (req, res) => {
     const body = req.body
 
     // ------------- 1st Method -------------
-    if (!body.name || !body.price || !body.description) {
+    if (!body.name || !body.price || !body.ratings || !body.description) {
         res.status(400).send({
             message: 'Required Paramters Missing'
         })
@@ -41,6 +41,7 @@ app.post('/product', (req, res) => {
         id: `${new Date().getTime()}`,
         name: body.name,
         price: body.price,
+        ratings: body.ratings,
         description: body.description
     })
     res.send({
@@ -50,15 +51,13 @@ app.post('/product', (req, res) => {
     // ------------- 1st Method -------------
 
     // ------------- 2nd Method -------------
-    // if (body.name && body.price && body.description) {
+    // if (body.name && body.price && body.descript ion) {
     //     products.push({
     //         name: body.name,
     //         price: body.price,
+    //         ratings: body.ratings,
     //         description: body.description
     //     })
-    //     console.log(body.name)
-    //     console.log(body.price)
-    //     console.log(body.description)
     //     res.send('Product added succesfullly')
     // } else {
     //     res.status(400).send("Required Paramters Missing")
@@ -88,7 +87,7 @@ app.get('/product/:id', (req, res) => {
     if (!isFound) {
         res.status(400)
         res.send({
-            message: 'Product Not Fund'
+            message: 'Product Not Found'
         })
     }
 })
@@ -114,7 +113,7 @@ app.delete('/product/:id', (req, res) => {
         if (products[i].id === id) {
             products.splice(i, 1)
             res.send({
-                message: `</h1> Product deleted Succesfully </h1>`
+                message: `Product deleted Succesfully`
             })
             isFound = true
             break
@@ -133,7 +132,7 @@ app.put('/product/:id', (req, res) => {
     const body = req.body
     const id = req.params.id
 
-    if (!body.name || !body.price || !body.description) {
+    if (!body.name || !body.price || !body.ratings || !body.description) {
         res.status(400).send({
             message: "Required Paramters Missing"
         })

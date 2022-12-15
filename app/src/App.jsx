@@ -11,16 +11,19 @@ const App = () => {
   // ----------------------------- States -----------------------------
   const [product, setProduct] = useState([])
   const [addProduct, setAddProduct] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [editProduct, setEditProduct] = useState({})
   const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [ratings, setRatings] = useState('')
+  const [description, setDescription] = useState('')
   // ----------------------------- States -----------------------------
 
 
   // ----------------------------- Create Product Function -----------------------------
   const createPost = (e) => {
     e.preventDefault();
-    axios.post(`${baseUrl}/product`, { name, description, price })
+    axios.post(`${baseUrl}/product`, { name, price, ratings, description })
       .then(response => {
         console.log("Response Sent ", response.data);
         setAddProduct(!addProduct)
@@ -38,7 +41,7 @@ const App = () => {
     const allProducts = async () => {
       try {
         const response = await axios.get(`${baseUrl}/products`)
-        console.log(response.data);
+        // console.log(response.data);
         setProduct(response.data.data)
       }
       catch (error) {
@@ -56,7 +59,7 @@ const App = () => {
 
 
   // ----------------------------- Delete Product Function -----------------------------
-  const deleteProduct = async (id) => {
+  const deleteFunction = async (id) => {
     try {
       const response = await axios.delete(`${baseUrl}/product/${id}`)
       console.log("response: ", response.data);
@@ -70,14 +73,14 @@ const App = () => {
 
   // ----------------------------- Edit Product Function -----------------------------
 
-  const editProduct = async(id) => {
-    try {
-      const response = await axios.put(`${baseUrl}/product/${id}`)
-      console.log("response: ", response.data);
-      setAddProduct(!addProduct)
-    } catch (error) {
-      console.log("error in getting all products", error);
-    }
+
+  const editFunction = (product, i) => {
+    // console.log('Editing Product')
+    // console.log(editMode)
+    setEditMode(!editMode)
+    setEditProduct(product)
+    console.log(i, product)
+    console.log("EDIT PRODUCT +=>", editProduct)
   }
 
   // ----------------------------- Edit Product Function -----------------------------
@@ -88,13 +91,16 @@ const App = () => {
   return (
     <>
       <form onSubmit={createPost}>
+        <h1>Product</h1>
         <h3>
-          Product Name:
+          Name:
           <input placeholder='Enter Product' type="text" onChange={(e) => (setName(e.target.value))} /> <br />
-          Product Description:
-          <input placeholder='Enter Product Description' type="text" onChange={(e) => (setDescription(e.target.value))} /> <br />
-          Product Price:
+          Price:
           <input placeholder='Enter Product Price' type="number" onChange={(e) => (setPrice(e.target.value))} /> <br />
+          Ratings:
+          <input placeholder='Enter Product Ratings' type="number" onChange={(e) => (setRatings(e.target.value))} /> <br />
+          Description:
+          <input placeholder='Enter Product Description' type="text" onChange={(e) => (setDescription(e.target.value))} /> <br />
           <button>Post</button>
         </h3>
       </form>
@@ -104,21 +110,26 @@ const App = () => {
         (
           <div key={i}>
             <hr />
-            <h1>{eachProduct.name}</h1>
-            <h3>{eachProduct.description}</h3>
-            <h3>{eachProduct.price}</h3>
-            <h3>{eachProduct.id}</h3>
-            <button onClick={() => { deleteProduct(eachProduct.id) }}>Delete</button>
-            <button onClick={() => { editProduct(eachProduct.id) }}>Edit</button>
+            <h2><b>Name</b> :{eachProduct.name}</h2>
+            <p><b>ID</b> :{eachProduct.id}</p>
+            <p><b>Price</b> :{eachProduct.price}</p>
+            <p><b>Ratings</b> :{eachProduct.ratings}</p>
+            <p><b>Description</b> :{eachProduct.description}</p>
+            <button onClick={() => { deleteFunction(eachProduct.id) }}>Delete</button>
+            <button onClick={() => { editFunction(eachProduct, i) }}>Edit</button>
+
+            {/* {
+              (isEdit && editProd.id === eachProduct.id) ?
+                <>
+
+                </>
+                : null
+            } */}
             <hr />
             <br />
           </div>
-
         ))}
       </div>
-
-
-
     </>
   )
 }
