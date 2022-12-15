@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import './App.css'
 
-
 let baseUrl = '';
 if (window.location.href.split(':')[0] === 'http') { baseUrl = 'http://localhost:4444' }
-
 
 const App = () => {
   // ----------------------------- States -----------------------------
   const [product, setProduct] = useState([])
-  const [addProduct, setAddProduct] = useState(false)
+  const [addProduct, setAddProduct] = useState(false)//Runs every time product is added ,deleted or edited 
   const [editMode, setEditMode] = useState(false)
   const [editProduct, setEditProduct] = useState({})
   const [name, setName] = useState('')
@@ -27,11 +25,11 @@ const App = () => {
       .then(response => {
         console.log("Response Sent ", response.data);
         setAddProduct(!addProduct)
+        console.log('Product added Succesfully 👍')
       })
       .catch(error => {
-        console.log(error);
+        console.log('Error occured while adding product ❌', error)
       })
-    console.log('Post created Succesfully 👍')
   }
   // ----------------------------- Create Product Function -----------------------------
 
@@ -41,11 +39,11 @@ const App = () => {
     const allProducts = async () => {
       try {
         const response = await axios.get(`${baseUrl}/products`)
-        // console.log(response.data);
         setProduct(response.data.data)
+        console.log('Product fetched Succesfully 👍')
       }
       catch (error) {
-        console.log('error in getting all products', error)
+      console.log('Error occured fetching product ❌', error)
       }
     }
     allProducts()
@@ -64,29 +62,33 @@ const App = () => {
       const response = await axios.delete(`${baseUrl}/product/${id}`)
       console.log("response: ", response.data);
       setAddProduct(!addProduct)
+      console.log('Product deleted Succesfully 👍')
     } catch (error) {
-      console.log("error in getting all products", error);
+      console.log('Error occured while deleting product ❌', error)
     }
   }
   // ----------------------------- Delete Product Function -----------------------------
 
 
   // ----------------------------- Edit Product Function -----------------------------
-
-
-  const editFunction = (product, i) => {
-    // console.log('Editing Product')
-    // console.log(editMode)
+  const editFunction = (product) => {
     setEditMode(!editMode)
     setEditProduct(product)
-    console.log(i, product)
-    console.log("EDIT PRODUCT +=>", editProduct)
   }
 
+  const editProductFunc = (id) => {
+    console.log("first")
+    axios.put(`${baseUrl}/product/${id}`, { name, price, ratings, description })
+      .then(response => {
+        console.log("Response Sent ", response.data);
+        setAddProduct(!addProduct)
+        console.log('Product edited Succesfully 👍')
+      })
+      .catch(error => {
+        console.log('Error occured while editing product ❌', error)
+      })
+  }
   // ----------------------------- Edit Product Function -----------------------------
-
-
-
 
   return (
     <>
@@ -117,14 +119,25 @@ const App = () => {
             <p><b>Description</b> :{eachProduct.description}</p>
             <button onClick={() => { deleteFunction(eachProduct.id) }}>Delete</button>
             <button onClick={() => { editFunction(eachProduct, i) }}>Edit</button>
-
-            {/* {
-              (isEdit && editProd.id === eachProduct.id) ?
+            {
+              (editMode && editProduct.id === eachProduct.id) ?
                 <>
-
+                  <form onSubmit={(e) => { e.preventDefault(); editProductFunc(editProduct.id) }}>
+                    <h5>
+                      Edited Name:
+                      <input placeholder='Enter Product' type="text" onChange={(e) => (setName(e.target.value))} /> <br />
+                      Edited Price:
+                      <input placeholder='Enter Product Price' type="number" onChange={(e) => (setPrice(e.target.value))} /> <br />
+                      Edited Ratings:
+                      <input placeholder='Enter Product Ratings' type="number" onChange={(e) => (setRatings(e.target.value))} /> <br />
+                      Edited Description:
+                      <input placeholder='Enter Product Description' type="text" onChange={(e) => (setDescription(e.target.value))} /> <br />
+                      <button>Post</button>
+                    </h5>
+                  </form>
                 </>
                 : null
-            } */}
+            }
             <hr />
             <br />
           </div>
