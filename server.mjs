@@ -1,5 +1,5 @@
 import express from 'express'
-// import path from 'path'
+import path from 'path'
 import cors from 'cors'
 const app = express();
 const port = process.env.PORT || 4444;
@@ -162,9 +162,9 @@ app.put('/product/:id', (req, res) => {
 
 
 
-// const __dirname = path.resolve();
-// app.use('/', express.static(path.join(__dirname, './app/build')))
-// app.use('*', express.static(path.join(__dirname, './app/build')))
+const __dirname = path.resolve();
+app.use('/', express.static(path.join(__dirname, './app/build')))
+app.use('*', express.static(path.join(__dirname, './app/build')))
 
 
 
